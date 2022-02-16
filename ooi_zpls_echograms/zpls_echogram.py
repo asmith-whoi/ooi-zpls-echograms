@@ -457,7 +457,10 @@ def process_azfp(site, data_directory, xml_file, output_directory, dates, tilt_c
         'pressure': site_config[site]['deployed_depth'],  # approximate pressure (using depth m)
     }
     for raw_file in file_list:
-        ds = ep.open_raw(raw_file, sonar_model='AZFP', xml_path=xml_file)
+        try:
+            ds = ep.open_raw(raw_file, sonar_model='AZFP', xml_path=xml_file)
+        except Exception:
+            continue
         ds.platform_name = site         # OOI site name
         ds.platform_type = 'Mooring'    # ICES platform type
         ds.platform_code_ICES = '48'    # ICES code: tethered collection of instruments at a fixed location that may
