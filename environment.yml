@@ -1,4 +1,4 @@
-name: echogram
+name: echogram0.6
 channels:
   - defaults
   - conda-forge
