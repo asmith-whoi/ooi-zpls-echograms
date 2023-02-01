@@ -15,7 +15,7 @@ import xarray as xr
 
 from calendar import monthrange
 from datetime import datetime, date, timedelta
-from importlib.resources import files
+#from importlib.resources import files
 from pandas.plotting import register_matplotlib_converters
 from pathlib import Path
 from PIL import Image
@@ -739,7 +739,7 @@ def zpls_echogram(site, data_directory, output_directory, dates, zpls_model, xml
     echogram = os.path.join(output_directory, file_name + '.png')
     echo_image = Image.open(echogram)
     # noinspection PyTypeChecker
-    ooi_image = Image.open(files('ooi_zpls_echograms').joinpath('ooi-logo.png'))
+    ooi_image = Image.open('ooi-logo.png')
     width, height = echo_image.size
     transparent = Image.new('RGBA', (width, height), (0, 0, 0, 0))
     transparent.paste(echo_image, (0, 0))
