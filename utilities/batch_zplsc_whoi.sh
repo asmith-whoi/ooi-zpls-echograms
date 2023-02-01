@@ -6,7 +6,7 @@
 # C. Wingard 2021-11-10
 
 # Parse the command line inputs, setting the data directories and processing dates
-if [ $# -ne 6 ]; then
+if [ $# -ne 5 ]; then
     echo "$0: required inputs are the site name, the path to the raw and processed data"
     echo "directories, and the starting and ending dates (format is YYYY-MM-DD) of the"
     echo "deployment to batch process."
