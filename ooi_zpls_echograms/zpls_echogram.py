@@ -517,8 +517,15 @@ def process_sonar_data(site, data_directory, output_directory, dates, zpls_model
 
     # convert and process the raw files using echopype
     desc = 'Converting and processing %d raw %s data files' % (len(file_list), zpls_model)
-    echo = [_process_file(file, site, output_directory, zpls_model, xml_file, tilt_correction)
-            for file in tqdm(file_list, desc=desc)]
+#     echo = [_process_file(file, site, output_directory, zpls_model, xml_file, tilt_correction)
+#             for file in tqdm(file_list, desc=desc)]
+# Corrupt AZFP data files result in a recursion error. Let's add some exception handling...
+    echo = []
+    for file in tqdm(file_list, desc=desc):
+        try:
+            echo.append(_process_file(file, site, output_directory, zpls_model, xml_file, tilt_correction))
+        except RecursionError:
+            continue
 
     # concatenate the data into a single dataset
     try:
