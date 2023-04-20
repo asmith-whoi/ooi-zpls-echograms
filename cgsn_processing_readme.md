@@ -61,7 +61,7 @@ browser.
 Create the directory for the processed files:
 
 ```commandline
-> mkdir -p /mnt/cg-data/proc/<platform_designator>/r000XX/<path_to_instrument>/processed
+mkdir -p /mnt/cg-data/proc/<platform_designator>/r000XX/<path_to_instrument>/processed
 ```
 
 ---
@@ -69,13 +69,13 @@ Create the directory for the processed files:
 
 Navigate into the script directory (necessary for the workaround detailed in 
 _**Setup Notes**_ above):
-```
-> cd ~/ooi-zpls-echograms/ooi_zpls_echograms
+```commandline
+cd ~/ooi-zpls-echograms/ooi_zpls_echograms
 ```
 
 Start a new screen session:
 ```commandline
-> screen -S <session_name>
+screen -S <session_name>
 ```
 
 _Processing can take a long time. Using screen will allow you to disconnect
@@ -84,7 +84,7 @@ many potential interruptions._
 
 Run the batch script:
 ```commandline
-> ../utilities/batch_zplsc_whoi.sh <site> <raw_data_dir> <proc_dir> "<start_date>" "<end_date>"
+../utilities/batch_zplsc_whoi.sh <site> <raw_data_dir> <proc_dir> "<start_date>" "<end_date>"
 ```
 
 _Use the start and end dates for the whole deployment. The script will do all
@@ -92,8 +92,7 @@ the associated date math to break up the data into the correct week-long chunks.
 
 #### _Example:_
 ```commandline
-> ./batch_zplsc_whoi.sh ga02hypm_upper /mnt/cg-data/raw/GA02HYPM/R00003/instruments/ZPLSG_sn55073/DATA /mnt/cg-data/proc/GA02HYPM/R00003/instruments/ZPLSG_sn55073/processed "2016-10-29" "2018-01-11"
-
+./batch_zplsc_whoi.sh ga02hypm_upper /mnt/cg-data/raw/GA02HYPM/R00003/instruments/ZPLSG_sn55073/DATA /mnt/cg-data/proc/GA02HYPM/R00003/instruments/ZPLSG_sn55073/processed "2016-10-29" "2018-01-11"
 ```
 
 Observe the processing and wait for at least one full week to complete, making
@@ -108,7 +107,7 @@ screen. You may now disconnect from the server.
 
 Reconnect to the server and reattach to the screen session:
 ```commandline
-> screen -r [session name]
+screen -r [session name]
 ```
 
 _The session name is optional if it is the only one running. If you have
@@ -124,7 +123,7 @@ files.
 It is also a good idea to open and inspect the echogram images. From your
 local machine, use rsync to transfer the echograms to you:
 ```commandline
-> rsync -azvP --exclude='*.nc' ooiuser@ooi-cgdatadelivery1.whoi.net:/mnt/cg-data/proc/<platform_designator>/r000XX/<path_to_instrument>/processed <local_destination_dir>
+rsync -azvP --exclude='*.nc' ooiuser@ooi-cgdatadelivery1.whoi.net:/mnt/cg-data/proc/<platform_designator>/r000XX/<path_to_instrument>/processed <local_destination_dir>
 ```
 
 It is not necessary to open and inspect the netCDF files. They are large and
@@ -156,7 +155,7 @@ statements to catch the errors.
 In this case, don't use the batch processing script. Call the python script
 directly, as follows:
 ```commandline
-> zpls_echogram.py -s <site> -d <raw_data_dir> -o <proc_dir> -dr <start_date> <stop_date> -zm AZFP -xf <xml_file>
+zpls_echogram.py -s <site> -d <raw_data_dir> -o <proc_dir> -dr <start_date> <stop_date> -zm AZFP -xf <xml_file>
 ```
 
 #### Processing multiple deployments at once
@@ -167,3 +166,38 @@ deployment at a time.
 To process multiple deployments, use or write an additional shell script which
 calls the batch script repeatedly, substituting the specific parameters for
 each individual deployment.
+
+#### Local processing
+
+You can, of course, install and run the processing package on your local
+computer. For processing single deployments, this will likely be much faster
+than using the server.
+
+Be aware that you will also need a local copy of the raw data, which can be
+many gigabytes and take considerable time to acquire from the raw data server.
+Processed files will also require many gigabytes of space on your machine,
+which will then have to be transferred up to the raw data server, typically
+via some other intermediary server.
+
+Nevertheless, it may still be a good option for processing single deployment
+data at the time of recovery. Usually the raw data will be placed onto a
+portable external hard drive along with all other instrument data before
+syncing en masse to the raw data server. If you have access to that hard
+drive during the data recovery process, then you can access the raw data
+there, and then add the processed files when finished.
+
+Note that you may still need to copy the raw data temporarily to your
+internal hard drive. Though it may seem convenient to point to directories
+on the external drive when calling the processing script, this is known to
+cause errors. Despite this extra step, though, it is still much easier and
+faster than wget commands to pull the data from the internet.
+
+#### Processing on Mac
+
+The processing code has been tested and used with good results on Mac, with
+one exception. The shell script for batch processing was written for Linux,
+and depends on the date utility. Linux distros use GNU date. Mac is a flavor
+of BSD Unix and BSD date differs significantly.
+
+Batch processing on Mac requires using or writing an alternate shell script
+to account for the different date implementation.
