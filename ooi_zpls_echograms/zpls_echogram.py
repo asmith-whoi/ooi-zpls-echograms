@@ -15,7 +15,7 @@ import xarray as xr
 
 from calendar import monthrange
 from datetime import datetime, date, timedelta
-from importlib.resources import files
+# from importlib.resources import files
 from pandas.plotting import register_matplotlib_converters
 from pathlib import Path
 from PIL import Image
@@ -517,8 +517,15 @@ def process_sonar_data(site, data_directory, output_directory, dates, zpls_model
 
     # convert and process the raw files using echopype
     desc = 'Converting and processing %d raw %s data files' % (len(file_list), zpls_model)
-    echo = [_process_file(file, site, output_directory, zpls_model, xml_file, tilt_correction)
-            for file in tqdm(file_list, desc=desc)]
+#     echo = [_process_file(file, site, output_directory, zpls_model, xml_file, tilt_correction)
+#             for file in tqdm(file_list, desc=desc)]
+# Corrupt AZFP data files result in a recursion error. Let's add some exception handling...
+    echo = []
+    for file in tqdm(file_list, desc=desc):
+        try:
+            echo.append(_process_file(file, site, output_directory, zpls_model, xml_file, tilt_correction))
+        except RecursionError:
+            continue
 
     # concatenate the data into a single dataset
     try:
@@ -739,7 +746,7 @@ def zpls_echogram(site, data_directory, output_directory, dates, zpls_model, xml
     echogram = os.path.join(output_directory, file_name + '.png')
     echo_image = Image.open(echogram)
     # noinspection PyTypeChecker
-    ooi_image = Image.open(files('ooi_zpls_echograms').joinpath('ooi-logo.png'))
+    ooi_image = Image.open('ooi-logo.png')
     width, height = echo_image.size
     transparent = Image.new('RGBA', (width, height), (0, 0, 0, 0))
     transparent.paste(echo_image, (0, 0))
